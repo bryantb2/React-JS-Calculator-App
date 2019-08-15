@@ -6,15 +6,17 @@ class App extends React.Component {
 
 constructor(props) {
     super(props);
+    
     this.state = {};
     this.state = {
         //these are display strings
         finalOutput: "",
         realTimeOutput: "",
-        displayingFinalTotal: false,
+        displayingFinalTotal: false, //tracking if data is being displayed
         displayingExpression: false,
     };
     
+    //records the expression to be evaluated
     this.internalExpression = {
         expression: "empty",
         previousCharacter: "empty", //will be either "number" or "operator"
@@ -37,6 +39,7 @@ constructor(props) {
     this.updateFinalResultsDisplay = this.updateFinalResultsDisplay.bind(this);
 }
 
+//EVENT HANDLERS AND LISTENERS  -----------------------------------------
 assignClickEvent() {
     for(let i = 1; i < 18; i++) {
        if (i === 16) {
@@ -111,6 +114,7 @@ buttonClickEventHandler(event) {
     }
 }
     
+//INTERNAL EXPRESSION METHODS -----------------------------------------
 updateInternalExpression(inputValue) {
     //checks if the interal expression is empty
     if(this.internalExpression.expression.toString() === "empty") {
@@ -141,60 +145,15 @@ updateInternalExpression(inputValue) {
             expression += inputValue.toString();
             this.internalExpression.expression= expression;
         }
-        /*
-        if (this.isOperator(inputValue) === false) {
-            //if the input is a number, and the previous character in the global expression is an operator
-            if(this.internalExpression.previousCharacter === "operator") {
-                expression += inputValue.toString();
-                this.internalExpression.expression= expression;
-            }
-            //do nothing if the inputted and previous values are both numbers!!
-        }*/
         //records the type of value that was input last
     }
     this.internalExpression.previousCharacter = this.typeOfValue(inputValue);
 }    
     
-updateFinalResultsDisplay(value) {
-    this.setState({
-        finalOutput: value,
-        displayingFinalTotal: true
-    });
-}
-    
-resetFinalResultsDisplay() {
-    //resets final results
-    this.setState({
-        finalOutput: "",
-        displayingFinalTotal: false,
-    })
-}
-
-resetRTDisplay() {
-    //resets real-time display
-    this.setState({
-        realTimeOutput: "",
-        displayingExpression: false,
-    })
+resetInternalExpression() {
+        this.internalExpression.expression = "empty";
+        this.internalExpression.previousCharacter = "empty";
 }    
-    
-updateRTDisplay(expression) {
-    expression = Array.from(expression);
-    let result = "";
-    /*expression.forEach(function(item) {
-        result += item + " ";
-    )
-    }*/
-    for (let character of expression) {
-       result += character + " "; 
-    }
-    
-    
-    this.setState({
-        realTimeOutput: result,
-        displayingExpression: true,
-    })
-}
     
 calculateAnswer(expression) {
     console.log("now the answer is calculated");
@@ -231,12 +190,48 @@ isNumber(value) {
             return false;
     }
     return true;
+}    
+    
+//UI METHODS -----------------------------------------------------------
+updateFinalResultsDisplay(value) {
+    this.setState({
+        finalOutput: value,
+        displayingFinalTotal: true
+    });
 }
-       
-resetInternalExpression() {
-        this.internalExpression.expression = "empty";
-        this.internalExpression.previousCharacter = "empty";
+    
+resetFinalResultsDisplay() {
+    //resets final results
+    this.setState({
+        finalOutput: "",
+        displayingFinalTotal: false,
+    })
+}
+
+resetRTDisplay() {
+    //resets real-time display
+    this.setState({
+        realTimeOutput: "",
+        displayingExpression: false,
+    })
+}    
+    
+updateRTDisplay(expression) {
+    expression = Array.from(expression);
+    let result = "";
+    for (let character of expression) {
+        if (this.isOperator(character) === true)
+            result += (" " + character + " ");
+        else
+            result += character;
     }
+    
+    
+    this.setState({
+        realTimeOutput: result,
+        displayingExpression: true,
+    })
+}
 
 render() {
     
