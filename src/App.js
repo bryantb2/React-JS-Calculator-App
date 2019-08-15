@@ -11,6 +11,8 @@ constructor(props) {
         //these are display strings
         finalOutput: "",
         realTimeOutput: "",
+        displayingFinalTotal: false,
+        displayingExpression: false,
     };
     
     this.internalExpression = {
@@ -18,16 +20,24 @@ constructor(props) {
         previousCharacter: "empty", //will be either "number" or "operator"
     };
     
+    //Arrays of IDs for various button groups
+    this.buttonNumberArray = ["btn1","btn2","btn3","btn5","btn6","btn7","btn9","btn10","btn11","btn13"];
+    this.buttonOperatorArray = ["btn4","btn8","btn12","btn15"];
+    this.enterButton = "btn17";
+    this.clearButton = "btn16";
     
-    //binds
+    //BINDS
     this.buttonClickEventHandler = this.buttonClickEventHandler.bind(this);
     this.assignClickEvent = this.assignClickEvent.bind(this);
     this.updateInternalExpression = this.updateInternalExpression.bind(this);
     this.isOperator = this.isOperator.bind(this);
     this.typeOfValue = this.typeOfValue.bind(this);
+    this.isNumber = this.isNumber.bind(this);
     this.calculateAnswer = this.calculateAnswer.bind(this);
     this.resetInternalExpression = this.resetInternalExpression.bind(this);
+    this.resetRTDisplay = this.resetRTDisplay.bind(this);
     this.updateRTDisplay = this.updateRTDisplay.bind(this);
+    this.updateFinalResultsDisplay = this.updateFinalResultsDisplay.bind(this);
     
     //function calls
     //window.onload();
@@ -36,8 +46,27 @@ constructor(props) {
 
 assignClickEvent() {
     for(let i = 1; i < 18; i++) {
-        document.getElementById(`btn${i}`).addEventListener("click",this.buttonClickEventHandler);
+       if (i == 16) {
+           document.getElementById("btn16").addEventListener("click",this.buttonClickEventHandler);
+       }
+        else if (i == 17) {
+            document.getElementById("btn17").addEventListener("click",this.enterbutton);
+        }
+        else {  
+            document.getElementById(`btn${i}`).addEventListener("click",this.buttonClickEventHandler);
+        }
     }
+}
+
+enterButtonClickEventHandler(event) {
+    //
+}    
+    
+clearButtonClickEventHandler(event) {
+    //reset internal expression
+    //reset RTDisplay
+    //
+    
 }
     
 buttonClickEventHandler(event) {
@@ -48,82 +77,113 @@ buttonClickEventHandler(event) {
     console.log(`inside button click event method; value is: ${inputValue}`);
     
     //determines if the expression can accept more characters
-    if (this.internalExpression.expression.length < 3 && this.internalExpression.expression !== "empty") {
-        this.updateInternalExpression(inputValue);
-        //update the RT display
-        this.updateRTDisplay();
-        
+    if (this.internalExpression.expression !== "empty") {
+        if (this.internalExpression.expression.length < 3) {
+                this.updateInternalExpression(inputValue);
+                //update the RT display {
+                this.updateRTDisplay(this.internalExpression.expression);
+        }
+        //will calc answer and then update internal expression
+        else {
+            //calculatAnswer
+            const answer = this.calculateAnswer(this.internalExpression.expression);
+            //after answer is calcated, reset internal expression
+            this.resetInternalExpression();
+            this.resetRTDisplay();
+            this.updateFinalResultsDisplay(answer);
+        }
     }
-    else if(this.internalExpression.expression === "empty") {
-        this.updateInternalExpression(inputValue);
-        //update the RT display
-        this.updateRTDisplay();
-    }
-    //will calc answer and then update internal expression
+    //executes under the assumption the expression is empty
     else {
-        //calculatAnswer
-        const answer = this.calculateAnswer(this.internalExpression.expression);
-        //after answer is calcated, reset internal expression
-        this.resetInternalExpression();
-        this.updateFinalResultsDisplay();
+        this.updateInternalExpression(inputValue);
+        //update the RT display
+        this.updateRTDisplay(this.internalExpression.expression);
     }
-    
-}
-    
-updateFinalResultsDisplay(value) {
-    //this will return a react element
-}
-
-updateRTDisplay() {
-    let expression = this.internalExpression.expression;
-    let result = "";
-    expression.forEach(function(item) {
-        result += item + " ";
-    }
-    )
-    this.setState({
-        realTimeOutput = result;
-    })
 }
     
 updateInternalExpression(inputValue) {
     //checks if the interal expression is empty
     if(this.internalExpression.expression.toString() === "empty") {
-        this.internalExpression = inputValue.toString();
+        //checks to make sure the math syntax being entered is correct
+        if (this.isNumber(inputValue) === true) {
+            this.internalExpression.expression = inputValue.toString();
+        }
+        else {
+            alert("Please enter a number or parentheses");
+        }
     }
-    //if expression is not empty, test the input value to determine how it is processed
+    //if expression is not empty
     else {
+        let expression = this.internalExpression.expression.toString();
         if (this.isOperator(inputValue) === true) {
-        //if the input is an operator, and the previous character in the global expression is an number
+        //if the input is an operator, and the previous character in the global expression is a number
             if(this.internalExpression.previousCharacter === "number") {
-                this.internalExpression.expression += inputValue.toString();
+                expression += inputValue.toString();
+                this.internalExpression.expression= expression;
         }
         //do nothing if the inputted and previous values are both operators!!
         }
-        else if (this.isOperator(inputValue) === false) {
+        if (this.isOperator(inputValue) === false) {
             //if the input is a number, and the previous character in the global expression is an operator
             if(this.internalExpression.previousCharacter === "operator") {
-                this.internalExpression.expression += inputValue.toString();
+                expression += inputValue.toString();
+                this.internalExpression.expression= expression;
             }
             //do nothing if the inputted and previous values are both numbers!!
         }
         //records the type of value that was input last
-        this.typeOfValue(inputValue);
     }
+    this.internalExpression.previousCharacter = this.typeOfValue(inputValue);
+}    
+    
+updateFinalResultsDisplay(value) {
+    this.setState({
+        finalOutput: value,
+        displayingFinalTotal: true
+    });
+}
+
+resetRTDisplay() {
+    //resets display
+    this.setState({
+        realTimeOutput: "",
+        displayingExpression: false
+    })
+}    
+    
+updateRTDisplay(expression) {
+    expression = Array.from(expression);
+    let result = "";
+    /*expression.forEach(function(item) {
+        result += item + " ";
+    )
+    }*/
+    for (let character of expression) {
+       result += character + " "; 
+    }
+    
+    
+    this.setState({
+        realTimeOutput: result,
+        displayingExpression: true,
+    })
 }
     
 calculateAnswer(expression) {
     console.log("now the answer is calculated");
-    const answer = math.eval(expression);
+    const answer = eval(expression);
+    return answer;
 }
     
 
 typeOfValue(value) {
     let expression = this.internalExpression.expression;
     let lastExpressionCharacter = expression[(expression.length -1)];
+    let type = "";
     if (expression !== "empty") {
-        this.internalExpression.previousCharacter = (this.isOperator(lastExpressionCharacter)===true) ? "operator" : "number";
+        type = (this.isOperator(lastExpressionCharacter)===true) ? "operator" : "number";
     }
+    return type;
 }
     
 isOperator(value) {
@@ -134,6 +194,16 @@ isOperator(value) {
             return true;
     }
     return false;
+}
+
+isNumber(value) {
+    value = value.toString();
+    let operatorArray = ["-","+","/","*"];
+    for (let i = 0; i < operatorArray.length; i++) {
+        if(value === operatorArray[i])
+            return false;
+    }
+    return true;
 }
        
 resetInternalExpression() {
@@ -168,7 +238,7 @@ render() {
                     &nbsp;
                 </div>
                 <div className="col-md-4" id="finalResult">
-                    `${this.state.finalOutput}`
+                    {this.state.finalOutput}
                 </div>
             </div>
 
@@ -177,7 +247,7 @@ render() {
                         &nbsp;
                 </div>
                 <div className="col-md-4" id="RTDisplay">
-                    `${this.state.realTimeOutput}`
+                    {this.state.realTimeOutput}
                 </div>
             </div>
 
