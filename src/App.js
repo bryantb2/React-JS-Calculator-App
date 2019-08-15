@@ -46,11 +46,11 @@ constructor(props) {
 
 assignClickEvent() {
     for(let i = 1; i < 18; i++) {
-       if (i == 16) {
-           document.getElementById("btn16").addEventListener("click",this.buttonClickEventHandler);
+       if (i === 16) {
+           document.getElementById("btn16").addEventListener("click",this.clearButtonClickEventHandler);
        }
-        else if (i == 17) {
-            document.getElementById("btn17").addEventListener("click",this.enterbutton);
+        else if (i === 17) {
+            document.getElementById("btn17").addEventListener("click",this.enterButtonClickEventHandler);
         }
         else {  
             document.getElementById(`btn${i}`).addEventListener("click",this.buttonClickEventHandler);
@@ -59,7 +59,16 @@ assignClickEvent() {
 }
 
 enterButtonClickEventHandler(event) {
-    //
+    //calculate answer
+    //add answer to final answer, if present
+    //update final results display
+    //reset real time display
+    let answer = this.calculateAnswer(this.internalExpression.expression);
+    if (this.state.displayingFinalTotal === true) {
+        answer += this.state.finalOutput;
+    }
+    this.updateFinalResultsDisplay(answer);
+    
 }    
     
 clearButtonClickEventHandler(event) {
