@@ -41,12 +41,12 @@ constructor(props) {
 
 //EVENT HANDLERS AND LISTENERS  -----------------------------------------
 assignClickEvent() {
-    for(let i = 1; i < 18; i++) {
-       if (i === 16) {
-           document.getElementById("btn16").addEventListener("click",this.clearButtonClickEventHandler);
+    for(let i = 1; i < 19; i++) {
+       if (i === 17) {
+           document.getElementById("btn17").addEventListener("click",this.clearButtonClickEventHandler);
        }
-        else if (i === 17) {
-            document.getElementById("btn17").addEventListener("click",this.enterButtonClickEventHandler);
+        else if (i === 18) {
+            document.getElementById("btn18").addEventListener("click",this.enterButtonClickEventHandler);
         }
         else {  
             document.getElementById(`btn${i}`).addEventListener("click",this.buttonClickEventHandler);
@@ -91,19 +91,39 @@ buttonClickEventHandler(event) {
     
     //determines if the expression can accept more characters
     if (this.internalExpression.expression !== "empty") {
-        if (this.internalExpression.expression.length < 6) {
+        //when expression is below the length of 15
+        if (this.internalExpression.expression.length < 15) {
                 this.updateInternalExpression(inputValue);
                 //update the RT display {
                 this.updateRTDisplay(this.internalExpression.expression);
         }
-        //will calc answer and then update internal expression
-        else {
-            //calculatAnswer
-            const answer = this.calculateAnswer(this.internalExpression.expression);
-            //after answer is calcated, reset internal expression
-            this.resetInternalExpression();
-            this.resetRTDisplay();
-            this.updateFinalResultsDisplay(answer);
+        //special condition for when the expression reaches the length limit
+        else if(this.internalExpression.expression.length >= 15) {
+            let expression = this.internalExpression.expression;
+            expression = Array.from(expression);
+            
+            let calculationDone = false; //tracks whether or not the calculations have occured in the loop
+            
+            for (let character of expression) {
+                //will calc answer and then update internal expression
+                if (this.isOperator(character) === true && calculationDone === false) {
+                    //calculatAnswer
+                    const answer = this.calculateAnswer(this.internalExpression.expression);
+                    //after answer is calcated, reset internal expression
+                    if (this.state.displayingFinalTotal === true) {
+                        answer += this.state.finalOutput;
+                    }
+                    this.resetInternalExpression();
+                    this.resetRTDisplay();
+                    this.updateFinalResultsDisplay(answer);
+                    calculationDone = true;
+                }
+                else {
+                    this.resetInternalExpression();
+                    this.resetRTDisplay();
+                    this.resetFinalResultsDisplay();
+                }
+            }
         }
     }
     //executes under the assumption the expression is empty
@@ -225,8 +245,6 @@ updateRTDisplay(expression) {
         else
             result += character;
     }
-    
-    
     this.setState({
         realTimeOutput: result,
         displayingExpression: true,
@@ -331,14 +349,17 @@ render() {
                 <div className="col-md-4">
                     &nbsp;
                 </div>
-                <div className="col-md-2">
+                <div className="col-md-1">
                     <button id="btn13" type="button" className="btn btn btn-block" value="0">0</button>
                 </div>
                 <div className="col-md-1">
-                    <button id="btn14" type="button" className="btn btn btn-block" value=")">)</button>
+                    <button id="btn14" type="button" className="btn btn btn-block" value="(">(</button>
                 </div>
                 <div className="col-md-1">
-                    <button id="btn15" type="button" className="btn btn btn-block" value="*">*</button>
+                    <button id="btn15" type="button" className="btn btn btn-block" value=")">)</button>
+                </div>
+                <div className="col-md-1">
+                    <button id="btn16" type="button" className="btn btn btn-block" value="*">*</button>
                 </div>
             </div>
 
@@ -347,10 +368,10 @@ render() {
                     &nbsp;
                 </div>
                 <div className="col-md-2">
-                    <button id="btn16" type="button" className="btn btn btn-block" value="clear">Clear</button>
+                    <button id="btn17" type="button" className="btn btn btn-block" value="clear">Clear</button>
                 </div>
                 <div className="col-md-2">
-                    <button id="btn17" type="button" className="btn btn btn-block" value="enter">Enter Button</button>
+                    <button id="btn18" type="button" className="btn btn btn-block" value="enter">Enter Button</button>
                 </div>
             </div>
         </div>  
