@@ -87,7 +87,7 @@ buttonClickEventHandler(event) {
     
     const i = event.target.id;
     let inputValue = document.getElementById(i).value;
-    console.log(`inside button click event method; value is: ${inputValue}`);
+    //console.log(`inside button click event method; value is: ${inputValue}`);
     
     //determines if the expression can accept more characters
     if (this.internalExpression.expression !== "empty") {
@@ -176,7 +176,7 @@ resetInternalExpression() {
 }    
     
 calculateAnswer(expression) {
-    console.log("now the answer is calculated");
+    //console.log("now the answer is calculated");
     const answer = eval(expression);
     return answer;
 }
