@@ -20,12 +20,6 @@ constructor(props) {
         previousCharacter: "empty", //will be either "number" or "operator"
     };
     
-    //Arrays of IDs for various button groups
-    /*this.buttonNumberArray = ["btn1","btn2","btn3","btn5","btn6","btn7","btn9","btn10","btn11","btn13"];
-    this.buttonOperatorArray = ["btn4","btn8","btn12","btn15"];
-    this.enterButton = "btn17";
-    this.clearButton = "btn16";*/
-    
     //BINDS
     this.buttonClickEventHandler = this.buttonClickEventHandler.bind(this);
     this.enterButtonClickEventHandler = this.enterButtonClickEventHandler.bind(this);
@@ -38,6 +32,7 @@ constructor(props) {
     this.calculateAnswer = this.calculateAnswer.bind(this);
     this.resetInternalExpression = this.resetInternalExpression.bind(this);
     this.resetRTDisplay = this.resetRTDisplay.bind(this);
+    this.resetFinalResultsDisplay = this.resetFinalResultsDisplay.bind(this);
     this.updateRTDisplay = this.updateRTDisplay.bind(this);
     this.updateFinalResultsDisplay = this.updateFinalResultsDisplay.bind(this);
 }
@@ -72,8 +67,15 @@ enterButtonClickEventHandler(event) {
     
 clearButtonClickEventHandler(event) {
     //reset internal expression
-    //reset RTDisplay
-    //
+    //first reset RTDisplay
+    //then reset final display on second press (do this first if RTDdisplay has no values)
+    this.resetInternalExpression();
+    if (this.state.displayingExpression === true) {
+        this.resetRTDisplay();
+    }
+    else {
+        this.resetFinalResultsDisplay();
+    }
     
 }
     
@@ -159,12 +161,20 @@ updateFinalResultsDisplay(value) {
         displayingFinalTotal: true
     });
 }
+    
+resetFinalResultsDisplay() {
+    //resets final results
+    this.setState({
+        finalOutput: "",
+        displayingFinalTotal: false,
+    })
+}
 
 resetRTDisplay() {
-    //resets display
+    //resets real-time display
     this.setState({
         realTimeOutput: "",
-        displayingExpression: false
+        displayingExpression: false,
     })
 }    
     
