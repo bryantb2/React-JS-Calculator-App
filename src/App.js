@@ -21,13 +21,15 @@ constructor(props) {
     };
     
     //Arrays of IDs for various button groups
-    this.buttonNumberArray = ["btn1","btn2","btn3","btn5","btn6","btn7","btn9","btn10","btn11","btn13"];
+    /*this.buttonNumberArray = ["btn1","btn2","btn3","btn5","btn6","btn7","btn9","btn10","btn11","btn13"];
     this.buttonOperatorArray = ["btn4","btn8","btn12","btn15"];
     this.enterButton = "btn17";
-    this.clearButton = "btn16";
+    this.clearButton = "btn16";*/
     
     //BINDS
     this.buttonClickEventHandler = this.buttonClickEventHandler.bind(this);
+    this.enterButtonClickEventHandler = this.enterButtonClickEventHandler.bind(this);
+    this.clearButtonClickEventHandler = this.clearButtonClickEventHandler.bind(this);
     this.assignClickEvent = this.assignClickEvent.bind(this);
     this.updateInternalExpression = this.updateInternalExpression.bind(this);
     this.isOperator = this.isOperator.bind(this);
@@ -68,7 +70,8 @@ enterButtonClickEventHandler(event) {
         answer += this.state.finalOutput;
     }
     this.updateFinalResultsDisplay(answer);
-    
+    this.resetInternalExpression();
+    this.resetRTDisplay();
 }    
     
 clearButtonClickEventHandler(event) {
