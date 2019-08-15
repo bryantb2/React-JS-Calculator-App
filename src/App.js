@@ -40,10 +40,6 @@ constructor(props) {
     this.resetRTDisplay = this.resetRTDisplay.bind(this);
     this.updateRTDisplay = this.updateRTDisplay.bind(this);
     this.updateFinalResultsDisplay = this.updateFinalResultsDisplay.bind(this);
-    
-    //function calls
-    //window.onload();
-    
 }
 
 assignClickEvent() {
@@ -90,7 +86,7 @@ buttonClickEventHandler(event) {
     
     //determines if the expression can accept more characters
     if (this.internalExpression.expression !== "empty") {
-        if (this.internalExpression.expression.length < 3) {
+        if (this.internalExpression.expression.length < 6) {
                 this.updateInternalExpression(inputValue);
                 //update the RT display {
                 this.updateRTDisplay(this.internalExpression.expression);
@@ -132,9 +128,18 @@ updateInternalExpression(inputValue) {
             if(this.internalExpression.previousCharacter === "number") {
                 expression += inputValue.toString();
                 this.internalExpression.expression= expression;
-        }
+            }
+            else {
+                alert("Please enter a number or parentheses");
+            }
         //do nothing if the inputted and previous values are both operators!!
         }
+        //executes if the input is not an operator (i.e. number or parentheses)
+        else {
+            expression += inputValue.toString();
+            this.internalExpression.expression= expression;
+        }
+        /*
         if (this.isOperator(inputValue) === false) {
             //if the input is a number, and the previous character in the global expression is an operator
             if(this.internalExpression.previousCharacter === "operator") {
@@ -142,7 +147,7 @@ updateInternalExpression(inputValue) {
                 this.internalExpression.expression= expression;
             }
             //do nothing if the inputted and previous values are both numbers!!
-        }
+        }*/
         //records the type of value that was input last
     }
     this.internalExpression.previousCharacter = this.typeOfValue(inputValue);
